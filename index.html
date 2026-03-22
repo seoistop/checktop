@@ -6,33 +6,40 @@
 <title>SEO Location Tool</title>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   background: #0f172a;
   color: white;
 }
 
 .container {
   padding: 16px;
+  max-width: 500px;
+  margin: auto;
 }
 
 h2 {
   text-align: center;
+  margin-bottom: 10px;
 }
 
-.input-box {
-  margin-top: 20px;
-}
-
+/* Input */
 input {
   width: 100%;
   padding: 14px;
   border-radius: 12px;
   border: none;
   font-size: 16px;
+  background: #1e293b;
+  color: white;
 }
 
+/* Location cards */
 .locations {
   display: flex;
   gap: 10px;
@@ -46,29 +53,54 @@ input {
   text-align: center;
   background: #1e293b;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 .card.active {
   background: #3b82f6;
 }
 
+/* Buttons */
 button {
   width: 100%;
   padding: 14px;
-  margin-top: 20px;
+  margin-top: 15px;
   border-radius: 12px;
   border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.search-btn {
   background: #22c55e;
   color: white;
-  font-size: 16px;
+}
+
+.back-btn {
+  background: #334155;
+  color: white;
+  display: none;
+}
+
+/* Frame container */
+.frame-container {
+  margin-top: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: none;
 }
 
 iframe {
   width: 100%;
   height: 70vh;
   border: none;
-  margin-top: 15px;
-  border-radius: 12px;
+}
+
+/* Mobile tối ưu thêm */
+@media (max-width: 480px) {
+  h2 {
+    font-size: 18px;
+  }
 }
 </style>
 </head>
@@ -76,11 +108,10 @@ iframe {
 <body>
 
 <div class="container">
+
   <h2>🌍 SEO Location Search</h2>
 
-  <div class="input-box">
-    <input type="text" id="keyword" placeholder="Nhập từ khóa..." />
-  </div>
+  <input type="text" id="keyword" placeholder="Nhập từ khóa..." />
 
   <div class="locations">
     <div class="card active" onclick="setLocation('vn', this)">🇻🇳 VN</div>
@@ -88,9 +119,13 @@ iframe {
     <div class="card" onclick="setLocation('id', this)">🇮🇩 ID</div>
   </div>
 
-  <button onclick="searchGoogle()">Search</button>
+  <button class="search-btn" onclick="searchGoogle()">Search</button>
+  <button class="back-btn" id="backBtn" onclick="goBack()">⬅️ Quay lại</button>
 
-  <iframe id="resultFrame"></iframe>
+  <div class="frame-container" id="frameBox">
+    <iframe id="resultFrame"></iframe>
+  </div>
+
 </div>
 
 <script>
@@ -98,13 +133,13 @@ let currentLocation = "vn";
 
 function setLocation(loc, el) {
   currentLocation = loc;
-
   document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
 }
 
 function searchGoogle() {
-  const keyword = document.getElementById("keyword").value;
+  const keyword = document.getElementById("keyword").value.trim();
+  if (!keyword) return alert("Nhập từ khóa trước!");
 
   let hl = "en";
   if (currentLocation === "vn") hl = "vi";
@@ -113,16 +148,40 @@ function searchGoogle() {
 
   const url = `https://www.google.com/search?q=${encodeURIComponent(keyword)}&gl=${currentLocation}&hl=${hl}`;
 
-  // thử load iframe (sẽ bị chặn trên đa số trình duyệt)
-  document.getElementById("resultFrame").src = url;
+  const frame = document.getElementById("resultFrame");
+  const frameBox = document.getElementById("frameBox");
 
-  // fallback nếu bị chặn → mở trong same tab
+  // show UI trước
+  frameBox.style.display = "block";
+  document.getElementById("backBtn").style.display = "block";
+
+  // thử load iframe
+  frame.src = url;
+
+  // fallback nếu bị Google chặn iframe
   setTimeout(() => {
-    if (!document.getElementById("resultFrame").contentWindow.length) {
-      window.location.href = url;
+    try {
+      if (!frame.contentWindow || frame.contentWindow.location.href === "about:blank") {
+        window.open(url, "_blank");
+      }
+    } catch (e) {
+      window.open(url, "_blank");
     }
-  }, 1500);
+  }, 1200);
 }
+
+function goBack() {
+  document.getElementById("resultFrame").src = "";
+  document.getElementById("frameBox").style.display = "none";
+  document.getElementById("backBtn").style.display = "none";
+}
+
+// Enter để search (rất tiện mobile)
+document.getElementById("keyword").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    searchGoogle();
+  }
+});
 </script>
 
 </body>
