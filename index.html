@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>SEO Location Search</title>
+</head>
+<body>
+
+<h2>Chọn quốc gia để search Google</h2>
+
+<input type="text" id="keyword" placeholder="Nhập từ khóa..." />
+
+<br><br>
+
+<select id="location">
+  <option value="vn">Việt Nam</option>
+  <option value="br">Brazil</option>
+  <option value="id">Indonesia</option>
+</select>
+
+<br><br>
+
+<button onclick="searchGoogle()">Search</button>
+
+<script>
+function searchGoogle() {
+  const keyword = document.getElementById("keyword").value;
+  const location = document.getElementById("location").value;
+
+  let hl = "en";
+
+  if (location === "vn") hl = "vi";
+  if (location === "br") hl = "pt";
+  if (location === "id") hl = "id";
+
+  const url = `https://www.google.com/search?q=${encodeURIComponent(keyword)}&gl=${location}&hl=${hl}`;
+
+  window.open(url, "_blank");
+}
+</script>
+
+</body>
+</html>
