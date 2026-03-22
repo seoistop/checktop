@@ -25,7 +25,7 @@ body {
 
 h2 {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 /* Input */
@@ -64,39 +64,24 @@ input {
 button {
   width: 100%;
   padding: 14px;
-  margin-top: 15px;
+  margin-top: 12px;
   border-radius: 12px;
   border: none;
   font-size: 16px;
   cursor: pointer;
 }
 
-.search-btn {
+.btn-main {
   background: #22c55e;
   color: white;
 }
 
-.back-btn {
+.btn-sub {
   background: #334155;
   color: white;
-  display: none;
 }
 
-/* Frame container */
-.frame-container {
-  margin-top: 15px;
-  border-radius: 12px;
-  overflow: hidden;
-  display: none;
-}
-
-iframe {
-  width: 100%;
-  height: 70vh;
-  border: none;
-}
-
-/* Mobile tối ưu thêm */
+/* Mobile tweak */
 @media (max-width: 480px) {
   h2 {
     font-size: 18px;
@@ -119,12 +104,8 @@ iframe {
     <div class="card" onclick="setLocation('id', this)">🇮🇩 ID</div>
   </div>
 
-  <button class="search-btn" onclick="searchGoogle()">Search</button>
-  <button class="back-btn" id="backBtn" onclick="goBack()">⬅️ Quay lại</button>
-
-  <div class="frame-container" id="frameBox">
-    <iframe id="resultFrame"></iframe>
-  </div>
+  <button class="btn-main" onclick="searchNewTab()">🔍 Mở tab mới</button>
+  <button class="btn-sub" onclick="searchSameTab()">📱 Mở trong tab này</button>
 
 </div>
 
@@ -137,49 +118,40 @@ function setLocation(loc, el) {
   el.classList.add('active');
 }
 
-function searchGoogle() {
+function buildUrl() {
   const keyword = document.getElementById("keyword").value.trim();
-  if (!keyword) return alert("Nhập từ khóa trước!");
+
+  if (!keyword) {
+    alert("Nhập từ khóa trước!");
+    return null;
+  }
 
   let hl = "en";
   if (currentLocation === "vn") hl = "vi";
   if (currentLocation === "br") hl = "pt";
   if (currentLocation === "id") hl = "id";
 
-  const url = `https://www.google.com/search?q=${encodeURIComponent(keyword)}&gl=${currentLocation}&hl=${hl}`;
-
-  const frame = document.getElementById("resultFrame");
-  const frameBox = document.getElementById("frameBox");
-
-  // show UI trước
-  frameBox.style.display = "block";
-  document.getElementById("backBtn").style.display = "block";
-
-  // thử load iframe
-  frame.src = url;
-
-  // fallback nếu bị Google chặn iframe
-  setTimeout(() => {
-    try {
-      if (!frame.contentWindow || frame.contentWindow.location.href === "about:blank") {
-        window.open(url, "_blank");
-      }
-    } catch (e) {
-      window.open(url, "_blank");
-    }
-  }, 1200);
+  return `https://www.google.com/search?q=${encodeURIComponent(keyword)}&gl=${currentLocation}&hl=${hl}`;
 }
 
-function goBack() {
-  document.getElementById("resultFrame").src = "";
-  document.getElementById("frameBox").style.display = "none";
-  document.getElementById("backBtn").style.display = "none";
+// mở tab mới (khuyên dùng)
+function searchNewTab() {
+  const url = buildUrl();
+  if (!url) return;
+  window.open(url, "_blank");
 }
 
-// Enter để search (rất tiện mobile)
+// mở trong cùng tab
+function searchSameTab() {
+  const url = buildUrl();
+  if (!url) return;
+  window.location.href = url;
+}
+
+// Enter để search nhanh
 document.getElementById("keyword").addEventListener("keypress", function(e) {
   if (e.key === "Enter") {
-    searchGoogle();
+    searchNewTab();
   }
 });
 </script>
