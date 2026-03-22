@@ -6,10 +6,6 @@
 <title>SEO Location Tool</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -25,10 +21,8 @@ body {
 
 h2 {
   text-align: center;
-  margin-bottom: 15px;
 }
 
-/* Input */
 input {
   width: 100%;
   padding: 14px;
@@ -39,7 +33,6 @@ input {
   color: white;
 }
 
-/* Location cards */
 .locations {
   display: flex;
   gap: 10px;
@@ -53,14 +46,12 @@ input {
   text-align: center;
   background: #1e293b;
   cursor: pointer;
-  transition: 0.2s;
 }
 
 .card.active {
   background: #3b82f6;
 }
 
-/* Buttons */
 button {
   width: 100%;
   padding: 14px;
@@ -73,19 +64,10 @@ button {
 
 .btn-main {
   background: #22c55e;
-  color: white;
 }
 
 .btn-sub {
   background: #334155;
-  color: white;
-}
-
-/* Mobile tweak */
-@media (max-width: 480px) {
-  h2 {
-    font-size: 18px;
-  }
 }
 </style>
 </head>
@@ -99,9 +81,9 @@ button {
   <input type="text" id="keyword" placeholder="Nhập từ khóa..." />
 
   <div class="locations">
-    <div class="card active" onclick="setLocation('vn', this)">🇻🇳 VN</div>
-    <div class="card" onclick="setLocation('br', this)">🇧🇷 BR</div>
-    <div class="card" onclick="setLocation('id', this)">🇮🇩 ID</div>
+    <div class="card active" onclick="setLocation('vn','vi', this)">🇻🇳 VN</div>
+    <div class="card" onclick="setLocation('br','pt-BR', this)">🇧🇷 BR</div>
+    <div class="card" onclick="setLocation('id','id', this)">🇮🇩 ID</div>
   </div>
 
   <button class="btn-main" onclick="searchNewTab()">🔍 Mở tab mới</button>
@@ -111,9 +93,12 @@ button {
 
 <script>
 let currentLocation = "vn";
+let currentLang = "vi";
 
-function setLocation(loc, el) {
+function setLocation(loc, lang, el) {
   currentLocation = loc;
+  currentLang = lang;
+
   document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
 }
@@ -126,29 +111,24 @@ function buildUrl() {
     return null;
   }
 
-  let hl = "en";
-  if (currentLocation === "vn") hl = "vi";
-  if (currentLocation === "br") hl = "pt";
-  if (currentLocation === "id") hl = "id";
-
-  return `https://www.google.com/search?q=${encodeURIComponent(keyword)}&gl=${currentLocation}&hl=${hl}`;
+  return `https://www.google.com/search?q=${encodeURIComponent(keyword)}&gl=${currentLocation}&hl=${currentLang}&pws=0`;
 }
 
-// mở tab mới (khuyên dùng)
+// mở tab mới
 function searchNewTab() {
   const url = buildUrl();
   if (!url) return;
   window.open(url, "_blank");
 }
 
-// mở trong cùng tab
+// mở cùng tab
 function searchSameTab() {
   const url = buildUrl();
   if (!url) return;
   window.location.href = url;
 }
 
-// Enter để search nhanh
+// Enter để search
 document.getElementById("keyword").addEventListener("keypress", function(e) {
   if (e.key === "Enter") {
     searchNewTab();
