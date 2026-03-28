@@ -31,16 +31,19 @@ input {
   font-size: 16px;
   background: #1e293b;
   color: white;
+  box-sizing: border-box;
 }
 
 .locations {
   display: flex;
   gap: 10px;
   margin-top: 15px;
+  flex-wrap: wrap;
 }
 
 .card {
   flex: 1;
+  min-width: 100px;
   padding: 12px;
   border-radius: 12px;
   text-align: center;
@@ -84,6 +87,7 @@ button {
     <div class="card active" onclick="setLocation('vn','vi', this)">🇻🇳 VN</div>
     <div class="card" onclick="setLocation('br','pt-BR', this)">🇧🇷 BR</div>
     <div class="card" onclick="setLocation('id','id', this)">🇮🇩 ID</div>
+    <div class="card" onclick="setLocation('mx','es-MX', this)">🇲🇽 MX</div>
   </div>
 
   <button class="btn-main" onclick="searchNewTab()">🔍 Mở tab mới</button>
